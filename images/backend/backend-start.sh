@@ -8,4 +8,4 @@ envsubst < "/etc/consul.d/backend.json.tpl" > "/etc/consul.d/backend.json"
 consul agent -data-dir /tmp/consul -config-dir /etc/consul.d $CONSUL_SERVERS &
           
 # Start the microservice
-/opt/www/gceme -port=8080
+/opt/backend/mvn spring-boot:run

@@ -9,9 +9,10 @@
       "type": "googlecompute",
       "account_file": "{{user `account_file`}}",
       "project_id": "{{user `project_id`}}",
-      "source_image": "debian-8-jessie-v20150818",
+      "source_image": "centos-7-v20180523",
       "zone": "us-central1-f",
-      "image_name": "backend-{{timestamp}}"
+      "image_name": "backend-{{timestamp}}",
+      "ssh_username" : "root"
     }
   ],
   "provisioners": [
@@ -20,7 +21,7 @@
         "inline": [
           "# Make a dir we need",
           "mkdir -p /etc/consul.d",
-          "mkdir -p /opt/www"
+          "mkdir -p /opt/backend"
         ]
       },
       {
@@ -29,11 +30,6 @@
         "destination": "/etc/consul.d/backend.json.tpl"
       },
 
-      {
-        "type": "file",
-        "source": "gceme",
-        "destination": "/opt/www/gceme"
-      },
       {
         "type": "file",
         "source": "consul_servers.service",
@@ -59,16 +55,17 @@
       "type": "shell",
       "inline": [
             "#! /bin/bash",
-            "apt-get update -y",
-            "apt-get install -y unzip",
+            "yum update -y",
+            "yum install -y unzip java-1.8.0-openjdk-devel",
 
             "# Get and install consul and consul-template",
             "wget -O consul.zip {{user `consul_url`}}",
             "unzip consul.zip -d /usr/local/bin/",
 
-            "chmod +x /opt/www/gceme",
+            "chmod +x /opt/backend",
             "chmod +x /usr/bin/consul_servers.sh",
             "chmod +x /usr/bin/backend-start.sh",
+	    "git clone https://github.com/prosbloom/backend /opt/",
 
             "systemctl enable consul_servers.service",
             "systemctl enable backend.service"
